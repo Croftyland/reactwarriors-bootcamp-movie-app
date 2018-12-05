@@ -1,45 +1,49 @@
 import React from "react";
+import classNames from "classnames";
 
-export default class Pagination extends React.PureComponent {
-
+export default class Pagination extends React.Component {
     nextPage = () => {
-        this.props.onChangePage(this.props.page + 1);
+        this.props.onChangePagination({
+            page: this.props.page + 1,
+            total_pages: this.props.total_pages
+        });
     };
 
-    prevPage = () => {
-        this.props.onChangePage(this.props.page - 1);
+    prevPage = page => event => {
+        this.props.onChangePagination({
+            page: this.props.page - 1,
+            total_pages: this.props.total_pages
+        });
     };
 
     render() {
-        console.log("pagination");
+        const { page, total_pages } = this.props;
         return (
-            <React.Fragment>
-                <div
-                    className="btn-group d-flex justify-content-around mb-3"
-                    role="group"
-                    aria-label="Basic example"
-                >
-                    <button
-                        type="button"
-                        className="btn btn-light"
-                        disabled={this.props.page === 1}
-                        onClick={this.prevPage}
+            <nav className="d-flex align-items-center">
+                <ul className="pagination mb-0 mr-3">
+                    <li
+                        className={classNames("page-item", {
+                            disabled: page === 1
+                        })}
                     >
-                        Назад
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-light"
-                        disabled={this.props.page === this.props.total_pages}
-                        onClick={this.nextPage}
+            <span className="page-link" onClick={this.prevPage(page)}>
+               Назад
+            </span>
+                    </li>
+                    <li
+                        className={classNames("page-item", {
+                            disabled: total_pages === 1 || total_pages === page
+                        })}
                     >
-                        Вперед
-                    </button>
-                </div>
-                <div className="text-center">
-                    Страница {this.props.page} из {this.props.total_pages}
-                </div>
-            </React.Fragment>
+            <span className="page-link" onClick={this.nextPage}>
+              Вперед
+            </span>
+                    </li>
+                </ul>
+                <span>
+          {page} of {total_pages}
+        </span>
+            </nav>
         );
     }
 }

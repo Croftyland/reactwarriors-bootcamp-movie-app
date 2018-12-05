@@ -1,8 +1,8 @@
 import React from "react";
-import GenresHOC from "./GenresHOC";
 import PropTypes from "prop-types";
+import GenresHOC from "../HOC/GenresHOC";
 
-const Genres = ({ genres, with_genres, resetGenres, onChange }) => (
+const Genres = ({ resetGenres, onChange, genresList, with_genres }) => (
     <React.Fragment>
         <div>
             <button
@@ -13,34 +13,29 @@ const Genres = ({ genres, with_genres, resetGenres, onChange }) => (
                 Показать все жанры
             </button>
         </div>
-        <div className="mb-3">
-            {genres.map(genre => {
-                return (
-                    <div key={genre.id} className="form-check">
-                        <input
-                            className="form-check-input"
-                            type="checkbox"
-                            value={genre.id}
-                            id={`genre${genre.id}`}
-                            onChange={onChange}
-                            checked={with_genres.includes(String(genre.id))}
-                        />
-                        <label className="form-check-label" htmlFor={`genre${genre.id}`}>
-                            {genre.name}
-                        </label>
-                    </div>
-                );
-            })}
-        </div>
+        {genresList.map(genre => (
+            <div key={genre.id} className="form-check">
+                <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value={genre.id}
+                    id={`genre${genre.id}`}
+                    onChange={onChange}
+                    checked={with_genres.includes(String(genre.id))}
+                />
+                <label className="form-check-label" htmlFor={`genre${genre.id}`}>
+                    {genre.name}
+                </label>
+            </div>
+        ))}
     </React.Fragment>
 );
 
-Genres.defaultProps = {
-    genres: []
-};
-
 Genres.propTypes = {
-    genres: PropTypes.array.isRequired
+    genresList: PropTypes.array.isRequired,
+    with_genres: PropTypes.array.isRequired,
+    resetGenres: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired
 };
 
 export default GenresHOC(Genres);

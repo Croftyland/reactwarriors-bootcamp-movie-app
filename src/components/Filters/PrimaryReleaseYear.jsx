@@ -7,6 +7,7 @@ export default class PrimaryReleaseYear extends React.PureComponent {
         primary_release_year: PropTypes.string.isRequired,
         onChangeFilters: PropTypes.func.isRequired
     };
+
     static defaultProps = {
         options: [
             {
@@ -27,24 +28,20 @@ export default class PrimaryReleaseYear extends React.PureComponent {
             }
         ]
     };
+
     render() {
         const { primary_release_year, onChangeFilters, options } = this.props;
-
+        console.log("PrimaryReleaseYear render");
         return (
             <UISelect
                 id="primary_release_year"
                 name="primary_release_year"
-                primary_release_year={primary_release_year}
                 value={primary_release_year}
                 onChange={onChangeFilters}
                 labelText="Год релиза:"
             >
                 {options.map(option => (
-                    <option
-                        key={option.value}
-                        value={option.value}
-                        defaultValue={primary_release_year}
-                    >
+                    <option key={option.value} value={option.value}>
                         {option.label}
                     </option>
                 ))}

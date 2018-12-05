@@ -48,13 +48,12 @@ export default Component =>
         render() {
             const { genresList } = this.state;
             const { with_genres } = this.props;
-            console.log("genres container");
             return (
                 <Component
-                    genres={genresList}
-                    with_genres={with_genres}
                     resetGenres={this.resetGenres}
                     onChange={this.onChange}
+                    genresList={genresList}
+                    with_genres={with_genres}
                 />
             );
         }

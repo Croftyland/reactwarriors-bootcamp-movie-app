@@ -2,48 +2,59 @@ import React from "react";
 import Filters from "./Filters/Filters";
 import MoviesList from "./Movies/MoviesList";
 import Header from "./Header/Header";
-import Cookies from "universal-cookie";
-import { Modal, ModalBody } from "reactstrap";
-import Authorization from "./Header/Login/Authorization";
 import CallApi from "../api/api";
-import { library } from "@fortawesome/fontawesome-svg-core"
-import { far } from "@fortawesome/free-regular-svg-icons"
-import { faHeart,faBookmark } from "@fortawesome/free-solid-svg-icons"
-
-
-library.add(faHeart,far,faBookmark);
+import Cookies from "universal-cookie";
+import LoginModal from "./Header/Login/Login";
+import _ from "lodash"
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faBookmark, faHeart } from "@fortawesome/free-solid-svg-icons";
+import {
+    faBookmark as bookmarkRegular,
+    faHeart as heartRegular
+} from "@fortawesome/free-regular-svg-icons";
+library.add(faBookmark, faHeart, bookmarkRegular, heartRegular);
 
 const cookies = new Cookies();
-
 export const AppContext = React.createContext();
-
 export default class App extends React.Component {
     constructor() {
         super();
 
         this.state = {
+            user: null,
+            session_id: null,
+            showLoginModal: false,
             filters: {
                 sort_by: "popularity.desc",
                 primary_release_year: "2018",
                 with_genres: []
             },
-            user: null,
-            session_id: null,
             page: 1,
             total_pages: "",
-            showLoginModal: false
+            watchlistMovies: [],
+            favoriteMovies: []
         };
     }
 
-    toggleLoginModal = () => {
+    toggleModal = () => {
         this.setState(prevState => ({
             showLoginModal: !prevState.showLoginModal
         }));
     };
 
+    updateAuth = (user, session_id) => {
+        cookies.set("session_id", session_id, {
+            path: "/",
+            maxAge: 2592000
+        });
+        this.setState({
+            user: user,
+            session_id: session_id
+        });
+    };
     updateUser = user => {
         this.setState({
-            user
+            user: user
         });
     };
 
@@ -53,41 +64,24 @@ export default class App extends React.Component {
             maxAge: 2592000
         });
         this.setState({
-            session_id
+            session_id: session_id
         });
     };
 
-    resetUserInfo = () => {
-        this.setState({
-            user: null,
-            session_id: null
-        });
-    };
-
-    onChangeFilters = e => {
-        const newFilters = {
-            ...this.state.filters,
-            [e.target.name]: e.target.value
-        };
+    onChangeFilters = event => {
+        const value = event.target.value;
+        const name = event.target.name;
         this.setState(prevState => ({
-            filters: newFilters
+            filters: {
+                //Наполняем предыдущими значениями, иначе будет перетирание значений фильтров
+                ...prevState.filters,
+                [name]: value
+            }
         }));
     };
 
-    onChangePage = page => {
-        this.setState({
-            page
-        });
-    };
-
-    getTotalPages = total_pages => {
-        this.setState({
-            total_pages
-        });
-    };
-
-    clearAllFilters = () => {
-        this.setState({
+    onClear = () => {
+        const PureState = {
             filters: {
                 sort_by: "popularity.desc",
                 primary_release_year: "2018",
@@ -95,51 +89,121 @@ export default class App extends React.Component {
             },
             page: 1,
             total_pages: ""
+        };
+
+        this.setState({ ...PureState });
+    };
+
+    onChangePagination = ({ page, total_pages = this.state.total_pages }) => {
+        this.setState({
+            page,
+            total_pages
         });
     };
 
     componentDidMount() {
         const session_id = cookies.get("session_id");
-
         if (session_id) {
             CallApi.get("/account", {
                 params: {
                     session_id: session_id
                 }
             }).then(user => {
-                this.updateUser(user);
-                this.updateSessionId(session_id);
+                this.updateAuth(user, session_id);
+
             });
         }
     }
 
-    render() {
-        const {
-            filters,
-            page,
-            total_pages,
-            user,
-            showLoginModal,
-            session_id
-        } = this.state;
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.user === null && !_.isEqual(prevState.user, this.state.user))
+        {
+            console.log("render didupdate");
+            this.getFavoriteMovies();
+            this.getWatchListMovies();
 
+        }
+
+    }
+
+    onLogout = () => {
+        CallApi.delete("/authentication/session", {
+            body: {
+                session_id: this.state.session_id
+            }
+        }).then(data => {
+            cookies.remove("session_id");
+            this.setState({
+                user: null,
+                session_id: null,
+                favoriteMovies: [],
+                watchlistMovies: []
+            });
+        });
+    };
+
+
+    getFavoriteMovies = () => {
+        let userFavMovies = [];
+        CallApi.get(`/account/${this.state.user.id}/favorite/movies`, {
+            params: {
+                session_id: this.state.session_id
+            }
+        }).then(data => {
+            data.results.map(movie => {
+                return userFavMovies.push(movie.id);
+            });
+            this.setState({
+                favoriteMovies: userFavMovies
+            });
+            console.log(this.state.favoriteMovies);
+        });
+    };
+
+    getWatchListMovies = () => {
+        let userWatchlistMovies = [];
+        CallApi.get(`/account/${this.state.user.id}/watchlist/movies`, {
+            params: {
+                session_id: this.state.session_id
+            }
+        }).then(data => {
+            data.results.map(movie => {
+                return userWatchlistMovies.push(movie.id);
+            });
+            this.setState({
+                watchlistMovies: userWatchlistMovies
+            });
+            console.log(this.state.watchlistMovies);
+        });
+    };
+
+    render() {
+        console.log("render APP");
+        const { filters, page, total_pages, user, session_id } = this.state;
         return (
             <AppContext.Provider
                 value={{
                     user: user,
                     updateUser: this.updateUser,
-                    updateSessionId: this.updateSessionId,
+                    onLogout: this.onLogout,
                     session_id: session_id,
-                    resetUserInfo: this.resetUserInfo
+                    toggleModal: this.toggleModal,
+                    showLoginModal: this.state.showLoginModal,
+                    updateSessionId: this.updateSessionId,
+                    watchlistMovies: this.state.watchlistMovies,
+                    favoriteMovies: this.state.favoriteMovies,
+                    updateAuth: this.updateAuth
                 }}
             >
                 <div>
-                    <Header user={user} toggleLoginModal={this.toggleLoginModal} />
-                    <Modal isOpen={showLoginModal} toggle={this.toggleLoginModal}>
-                        <ModalBody>
-                            <Authorization toggleLoginModal={this.toggleLoginModal} />
-                        </ModalBody>
-                    </Modal>
+                    <LoginModal />
+                    <Header
+                        user={user}
+                        updateAuth={this.updateAuth}
+                        updateSessionId={this.updateSessionId}
+                        toggleModal={this.toggleModal}
+                        showLoginModal={this.state.showLoginModal}
+                    />
                     <div className="container">
                         <div className="row mt-4">
                             <div className="col-4">
@@ -147,37 +211,24 @@ export default class App extends React.Component {
                                     <div className="card-body">
                                         <h3>Фильтры:</h3>
                                         <Filters
-                                            filters={filters}
-                                            onChangeFilters={this.onChangeFilters}
                                             page={page}
                                             total_pages={total_pages}
-                                            onChangePage={this.onChangePage}
+                                            filters={filters}
+                                            onChangeFilters={this.onChangeFilters}
+                                            onChangePagination={this.onChangePagination}
+                                            onClear={this.onClear}
                                         />
-                                        <button
-                                            type="button"
-                                            className="btn btn-danger"
-                                            onClick={this.clearAllFilters}
-                                        >
-                                            Очистить Фильтры
-                                        </button>
                                     </div>
                                 </div>
                             </div>
-
                             <div className="col-8">
-                                {
-                                    <MoviesList
-                                        filters={filters}
-                                        page={page}
-                                        onChangePage={this.onChangePage}
-                                        onChangeFilters={this.onChangeFilters}
-                                        getTotalPages={this.getTotalPages}
-                                        user={user}
-                                        toggleLoginModal={this.toggleLoginModal}
-                                        showLoginModal={showLoginModal}
-                                        session_id={session_id}
-                                    />
-                                }
+                                <MoviesList
+                                    filters={filters}
+                                    page={page}
+                                    onChangePagination={this.onChangePagination}
+                                    user={user}
+                                    session_id={session_id}
+                                />
                             </div>
                         </div>
                     </div>

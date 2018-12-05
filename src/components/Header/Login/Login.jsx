@@ -1,24 +1,24 @@
 import React from "react";
+import AppContextHOC from "../../HOC/AppContextHOC";
+import { Modal, ModalBody } from "reactstrap";
+import LoginForm from "../Login/LoginForm";
+const LoginModal = ({ showLoginModal, toggleModal, updateSessionId, updateAuth }) => {
+    return (
+        <Modal isOpen={showLoginModal} toggle={toggleModal}>
+            <ModalBody>
+                <LoginForm
+                    updateSessionId={updateSessionId}
+                    toggleModal={toggleModal}
+                    updateAuth={updateAuth}
+                />
+            </ModalBody>
+        </Modal>
+    );
+};
 
-export default class Login extends React.Component {
+export default AppContextHOC(LoginModal);
 
-    render() {
-        const { toggleLoginModal } = this.props;
-
-        return (
-            <div>
-                <button
-                    className="btn btn-success"
-                    type="button"
-                    onClick={toggleLoginModal}
-                >
-                    Login
-                </button>
-            </div>
-        );
-    }
-}
-    // // цепочка промисов
+// // цепочка промисов
     // fetchApi(`${API_URL}/authentication/token/new?api_key=${API_KEY_3}`)
     //     .then(data => {
     //         return fetchApi(

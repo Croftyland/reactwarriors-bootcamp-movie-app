@@ -2,11 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import UISelect from "../UIComponents/UISelect";
 
-export default class SortBy extends React.PureComponent {
+export default class SortBy extends React.Component {
     static propTypes = {
-        onChangeFilters: PropTypes.func.isRequired,
-        sort_by: PropTypes.string.isRequired
+        sort_by: PropTypes.string.isRequired,
+        onChangeFilters: PropTypes.func.isRequired
     };
+
     static defaultProps = {
         options: [
             {
@@ -30,14 +31,13 @@ export default class SortBy extends React.PureComponent {
 
     render() {
         const { sort_by, onChangeFilters, options } = this.props;
-        console.log("sort by");
         return (
             <UISelect
                 id="sort_by"
                 name="sort_by"
-                sort_by={sort_by}
                 value={sort_by}
                 onChange={onChangeFilters}
+                labelText="Сортировать по:"
             >
                 {options.map(option => (
                     <option key={option.value} value={option.value}>

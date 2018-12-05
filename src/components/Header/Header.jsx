@@ -1,12 +1,9 @@
 import React from "react";
-import Login from "./Login/Login";
-import User from "./User";
-import PropTypes from "prop-types";
+import UserMenu from "./User";
 
 class Header extends React.Component {
     render() {
-        const { user, toggleLoginModal } = this.props;
-
+        const { toggleModal, user } = this.props;
         return (
             <nav className="navbar navbar-dark bg-primary">
                 <div className="container">
@@ -16,23 +13,20 @@ class Header extends React.Component {
                         </li>
                     </ul>
                     {user ? (
-                        <User user={user} />
+                        <UserMenu />
                     ) : (
-                        <Login toggleLoginModal={toggleLoginModal} />
+                        <button
+                            className="btn btn-success"
+                            type="button"
+                            onClick={toggleModal}
+                        >
+                            Login
+                        </button>
                     )}
                 </div>
             </nav>
         );
     }
 }
-
-Header.defaultProps = {
-    user: null
-};
-
-Header.propTypes = {
-    user: PropTypes.object,
-    toggleLoginModal: PropTypes.func.isRequired
-};
 
 export default Header;
