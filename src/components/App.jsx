@@ -5,7 +5,7 @@ import Cookies from "universal-cookie";
 import LoginModal from "./Header/Login/Login";
 import MoviesPage from "./Pages/MoviesPage/MoviesPage"
 import MoviePage from "./Pages/MoviePage/MoviePage"
-import { BrowserRouter, Route, Link } from "react-router-dom";
+import { BrowserRouter, Route } from "react-router-dom";
 import _ from "lodash"
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faBookmark, faHeart } from "@fortawesome/free-solid-svg-icons";

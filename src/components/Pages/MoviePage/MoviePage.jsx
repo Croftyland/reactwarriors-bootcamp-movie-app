@@ -21,7 +21,7 @@ export default class MoviePage extends Component {
     }
 
     render() {
-        const {movie,item} = this.state;
+        const { movie } = this.state;
         const bgHeader = {
             background: "#3f474d",
             backgroundImage: `url(https://image.tmdb.org/t/p/w500${
