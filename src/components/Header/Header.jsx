@@ -1,5 +1,6 @@
 import React from "react";
-import UserMenu from "./User";
+import User from "./User";
+import {Link} from "react-router-dom";
 
 class Header extends React.Component {
     render() {
@@ -9,11 +10,11 @@ class Header extends React.Component {
                 <div className="container">
                     <ul className="navbar-nav">
                         <li className="nav-item active">
-                            <a className="nav-link">Home</a>
+                            <Link className="nav-link" to={`/`}>Home</Link>
                         </li>
                     </ul>
                     {user ? (
-                        <UserMenu />
+                        <User />
                     ) : (
                         <button
                             className="btn btn-success"
