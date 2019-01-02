@@ -11,7 +11,7 @@ class MovieDetail extends React.Component {
         }
     }
     render() {
-        const { movie } = this.props
+        const {movie} = this.state;
 
         return (<div>
             <Table striped>
