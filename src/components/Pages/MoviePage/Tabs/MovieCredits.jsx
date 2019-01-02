@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import CallApi from "../../../api/api";
+import CallApi from "../../../../api/api";
 
 export default class MovieCredits extends Component {
 

@@ -2,6 +2,13 @@ import React, {Component} from 'react';
 import CallApi from "../../../api/api";
 import Favorite from "../../Movies/Favorite";
 import WatchList from "../../Movies/WatchList";
+import { Route, Switch } from "react-router-dom";
+import Tabs from "./Tabs/Tabs"
+
+import MovieCredits from "./Tabs/MovieCredits"
+import MovieDetail from "./Tabs/MovieDetails"
+import MovieVideos from "./Tabs/MovieVideos"
+
 
 export default class MoviePage extends Component {
 
@@ -21,7 +28,7 @@ export default class MoviePage extends Component {
     }
 
     render() {
-        const { movie } = this.state;
+        const {movie} = this.state;
         const bgHeader = {
             background: "#3f474d",
             backgroundImage: `url(https://image.tmdb.org/t/p/w500${
@@ -61,6 +68,23 @@ export default class MoviePage extends Component {
                   <WatchList item={movie}/>
                 </span>
                         </div>
+                        <Tabs id={this.props.match.params.id} />
+
+                        <Switch>
+                            <Route
+                                path='/movie/:id/movie-detail'
+                                render={(props) => <MovieDetail {...props} item={movie.item} />}
+                            />
+                            <Route
+                                path='/movie/:id/videos'
+                                render={(props) => <MovieVideos {...props} />}
+                            />
+                            <Route
+                                path='/movie/:id/movie-credits'
+                                render={(props) => <MovieCredits {...props} />}
+                            />
+                        </Switch>
+
                     </div>
                 </div>
             </div>
