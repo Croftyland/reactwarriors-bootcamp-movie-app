@@ -1,58 +1,70 @@
-import React, {Component} from 'react';
-import CallApi from "../../../../api/api";
+import React from 'react';
+import CallApi from '../../../../api/api';
+//import Load from "../../../Loader/Load"
 
-export default class MovieCredits extends Component {
 
-    constructor(){
-        super();
-        this.state = {
-            cast:[]
-        }
+class MovieCredits extends React.Component {
+    state = {
+        credits: [],
+        preloader: false
     }
 
-    componentDidMount = () => {
-        if (this.props.movieId) {
-            CallApi.get(`/movie/${this.props.movieId}/credits`).then(data => {
+    componentDidMount() {
+        this.setState({
+            preloader: true
+        });
+
+        CallApi.get(`/movie/${this.props.match.params.id}/credits`, {
+            params: {
+                language: "ru-RU"
+            }
+        })
+            .then(data => {
+                console.log(data.cast)
                 this.setState({
-                    cast: data.cast
+                    credits: data.cast,
+                    preloader: false
                 });
-            });
-        }
-    };
+
+            })
+
+    }
+
 
     render() {
-        const {item } = this.props;
-        console.log(item);
-        return (
-            <div>
-                <h2 className="characters-title">В ролях:</h2>
-                <div className="row">
-                    {this.state.cast.length > 0
-                        ? this.state.cast.map(item => {
-                            if (item.profile_path) {
-                                return (
-                                    <div
-                                        key={item.id}
-                                        className="col-xs-12 col-sm-6 col-md-3 pt-3 pb-3 character-card"
-                                    >
-                                        <img
-                                            alt=""
-                                            src={`https://image.tmdb.org/t/p/w500${
-                                                item.profile_path
-                                                }`}
-                                            style={{width: "100%"}}
-                                        />
-                                        <div className="character">
-                                            <h3>{item.name}</h3>
-                                            <span>{item.character}</span>
+
+        const { credits, preloader } = this.state
+
+        console.log(credits)
+        return (<div className="d-flex justify-content-center flex-wrap ">
+
+            {preloader ? (
+                <div className="mt-5">
+
+                </div>
+            ) : (
+
+                (credits.length) > 0 ? (
+                    credits.map((movie) => {
+                        if (movie.profile_path) {
+                            return (
+                                <React.Fragment key={movie.cast_id} >
+                                    <div className="card" style={{ "width": "12rem", "margin": "15px" }}>
+                                        <img className="card-img-top" src={`https://image.tmdb.org/t/p/w500/${movie.profile_path}`} alt="Card cap" />
+                                        <div className="card-body">
+                                            <p style={{ "fontWeight": "bold", "margin": "0", "font-size": "0.85rem" }}>{movie.name} </p>
+                                            <p style={{ "margin": "0", "fontSize": "0.85rem" }}>{movie.character} </p>
                                         </div>
                                     </div>
-                                );
-                            }
-                        })
-                        : null}
-                </div>
-            </div>
-        );
+                                </React.Fragment>
+                            )
+                        }
+                    })
+                ) : (<div className="mt-5">Нет информации</div>))
+            }
+
+        </div>);
     }
 }
+
+export default MovieCredits;

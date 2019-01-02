@@ -73,7 +73,7 @@ export default class MoviePage extends Component {
                         <Switch>
                             <Route
                                 path='/movie/:id/movie-detail'
-                                render={(props) => <MovieDetail {...props} item={movie.item} />}
+                                render={(props) => <MovieDetail {...props} item={movie} />}
                             />
                             <Route
                                 path='/movie/:id/videos'
@@ -81,7 +81,7 @@ export default class MoviePage extends Component {
                             />
                             <Route
                                 path='/movie/:id/movie-credits'
-                                render={(props) => <MovieCredits {...props} />}
+                                render={(props) => <MovieCredits {...props} item={movie} />}
                             />
                         </Switch>
 
