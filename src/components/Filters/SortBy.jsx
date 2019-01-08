@@ -1,18 +1,18 @@
 import React from "react";
-import PropTypes from "prop-types";
 import UISelect from "../UIComponents/UISelect";
 
-export default class SortBy extends React.Component {
-    static propTypes = {
-        sort_by: PropTypes.string.isRequired,
-        onChangeFilters: PropTypes.func.isRequired
-    };
+import { observer, inject } from "mobx-react";
 
+@inject(({ moviesPageStore }) => ({
+    moviesPageStore
+}))
+@observer
+class SortBy extends React.Component {
     static defaultProps = {
         options: [
             {
                 label: "Популярные по убыванию",
-                value: "popularity.desc"
+                value: "popularity.desc",
             },
             {
                 label: "Популярные по возростанию",
@@ -30,12 +30,15 @@ export default class SortBy extends React.Component {
     };
 
     render() {
-        const { sort_by, onChangeFilters, options } = this.props;
+        const {
+            moviesPageStore: { filters, onChangeFilters },
+            options
+        } = this.props;
         return (
             <UISelect
                 id="sort_by"
                 name="sort_by"
-                value={sort_by}
+                value={filters.sort_by}
                 onChange={onChangeFilters}
                 labelText="Сортировать по:"
             >
@@ -48,3 +51,4 @@ export default class SortBy extends React.Component {
         );
     }
 }
+export default SortBy;

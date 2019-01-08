@@ -21,3 +21,4 @@ export default AppContextHOC(AddFavoriteHOC(Favorite, "favoriteMovies"));
        this.getWatchListMovies();
      }
    } */
+

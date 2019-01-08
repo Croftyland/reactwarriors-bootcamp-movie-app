@@ -3,35 +3,33 @@ import SortBy from "./SortBy";
 import PrimaryReleaseYear from "./PrimaryReleaseYear";
 import Pagination from "./Pagination";
 import Genres from "./Genres";
+import { observer, inject } from "mobx-react";
 
-export default class Filters extends React.Component {
+@inject(({ moviesPageStore }) => ({
+    moviesPageStore
+}))
+@observer
+class Filters extends React.Component {
     render() {
         console.log("render Filters");
         const {
-            filters: { sort_by, primary_release_year, with_genres },
-            page,
-            total_pages,
-            onChangeFilters,
-            onChangePagination,
-            onClear
+            moviesPageStore: { onClearFilters }
         } = this.props;
         return (
             <form className="mb-3">
-                <button type="button" className="btn btn-light" onClick={onClear}>
+                <button
+                    type="button"
+                    className="btn btn-light"
+                    onClick={onClearFilters}
+                >
                     Сбросить фильтры
                 </button>
-                <SortBy sort_by={sort_by} onChangeFilters={onChangeFilters} />
-                <PrimaryReleaseYear
-                    primary_release_year={primary_release_year}
-                    onChangeFilters={onChangeFilters}
-                />
-                <Genres with_genres={with_genres} onChangeFilters={onChangeFilters} />
-                <Pagination
-                    page={page}
-                    total_pages={total_pages}
-                    onChangePagination={onChangePagination}
-                />
+                <SortBy />
+                <PrimaryReleaseYear />
+                <Genres />
+                <Pagination />
             </form>
         );
     }
 }
+export default Filters;

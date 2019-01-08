@@ -1,13 +1,12 @@
 import React from "react";
-import PropTypes from "prop-types";
 import UISelect from "../UIComponents/UISelect";
+import { observer, inject } from "mobx-react";
 
-export default class PrimaryReleaseYear extends React.PureComponent {
-    static propTypes = {
-        primary_release_year: PropTypes.string.isRequired,
-        onChangeFilters: PropTypes.func.isRequired
-    };
-
+@inject(({ moviesPageStore }) => ({
+    moviesPageStore
+}))
+@observer
+class PrimaryReleaseYear extends React.Component {
     static defaultProps = {
         options: [
             {
@@ -30,13 +29,13 @@ export default class PrimaryReleaseYear extends React.PureComponent {
     };
 
     render() {
-        const { primary_release_year, onChangeFilters, options } = this.props;
+        const { moviesPageStore:{filters,onChangeFilters}, options } = this.props;
         console.log("PrimaryReleaseYear render");
         return (
             <UISelect
                 id="primary_release_year"
                 name="primary_release_year"
-                value={primary_release_year}
+                value={filters.primary_release_year}
                 onChange={onChangeFilters}
                 labelText="Год релиза:"
             >
@@ -49,3 +48,4 @@ export default class PrimaryReleaseYear extends React.PureComponent {
         );
     }
 }
+export default PrimaryReleaseYear;
