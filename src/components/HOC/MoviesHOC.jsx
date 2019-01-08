@@ -54,13 +54,13 @@ export default Component =>
 
         render() {
             const { movies } = this.state;
-            const { user, session_id, toggleModal } = this.props;
+            const { user, session_id, toggleShowModal } = this.props;
             return (
                 <Component
             movies={movies}
             user={user}
             session_id={session_id}
-            toggleModal={toggleModal}
+            toggleModal={toggleShowModal}
             />
         );
         }

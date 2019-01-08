@@ -6,17 +6,17 @@ const AddFavoriteHOC = (Component, type) =>
     constructor(props) {
       super(props);
       this.state = {
-        isAdd: this.props[type].includes(this.props.item.id)
+        //isAdd: this.props[type].includes(this.props.item.id)
       };
     }
 
     changeFavorite = name => () => {
-      const { session_id, user, item, toggleModal } = this.props;
+      const { session_id, user, item, toggleShowModal } = this.props;
 
       if (session_id) {
         this.setState(
           prevState => ({
-            isAdd: !this.state.isAdd
+           // isAdd: !this.state.isAdd
           }),
           () => {
             CallApi.post(`/account/{${user.id}}/${name}`, {
@@ -34,7 +34,7 @@ const AddFavoriteHOC = (Component, type) =>
           }
         );
       } else {
-        toggleModal();
+        toggleShowModal();
       }
     };
 
