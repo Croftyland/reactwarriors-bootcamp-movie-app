@@ -10,3 +10,14 @@ const Favorite = ({changeFavorite, isAdd}) => {
 };
 
 export default AppContextHOC(AddFavoriteHOC(Favorite, "favoriteMovies"));
+
+/*  componentDidUpdate(prevProps, prevState) {
+     if (
+       prevState.user === null &&
+       !_.isEqual(prevState.user, this.state.user)
+     ) {
+       console.log("render didupdate");
+       this.getFavoriteMovies();
+       this.getWatchListMovies();
+     }
+   } */
