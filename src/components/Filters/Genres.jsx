@@ -1,41 +1,61 @@
 import React from "react";
-import PropTypes from "prop-types";
-import GenresHOC from "../HOC/GenresHOC";
+import { inject, observer } from "mobx-react";
 
-const Genres = ({ resetGenres, onChange, genresList, with_genres }) => (
-    <React.Fragment>
-        <div>
-            <button
-                type="button"
-                className="btn btn-outline-dark mb-2"
-                onClick={resetGenres}
-            >
-                Показать все жанры
-            </button>
-        </div>
-        {genresList.map(genre => (
-            <div key={genre.id} className="form-check">
+@inject(({ moviesPageStore }) => ({
+    genresList: moviesPageStore .genresList,
+    resetGenres: moviesPageStore .resetGenress,
+    with_genres: moviesPageStore .filters.with_genres,
+    changeFilters: moviesPageStore .changeFilters,
+    getGenres: moviesPageStore.getGenres
+}))
+@observer
+class Genres extends React.Component {
+  componentDidMount() {
+    this.props.getGenres();
+  }
+  render() {
+    const {
+        genresList,
+        resetGenres,
+        changeFilters,
+        with_genres
+
+    } = this.props;
+    return (
+      <React.Fragment>
+        <button
+          type="button"
+          className="btn btn-outline-dark mb-2 w-100"
+          onClick={resetGenres}
+        >
+          Показать все жанры
+        </button>
+
+        <div className="mb-3">
+          {genresList.map(genre => {
+            return (
+              <div key={genre.id} className="form-check">
                 <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value={genre.id}
-                    id={`genre${genre.id}`}
-                    onChange={onChange}
-                    checked={with_genres.includes(String(genre.id))}
+                  className="form-check-input"
+                  type="checkbox"
+                  value={genre.id}
+                  id={`genre${genre.id}`}
+                  onChange={changeFilters}
+                  checked={with_genres.includes(String(genre.id))}
                 />
-                <label className="form-check-label" htmlFor={`genre${genre.id}`}>
-                    {genre.name}
+                <label
+                  className="form-check-label"
+                  htmlFor={`genre${genre.id}`}
+                >
+                  {genre.name}
                 </label>
-            </div>
-        ))}
-    </React.Fragment>
-);
+              </div>
+            );
+          })}
+        </div>
+      </React.Fragment>
+    );
+  }
+}
 
-Genres.propTypes = {
-    genresList: PropTypes.array.isRequired,
-    with_genres: PropTypes.array.isRequired,
-    resetGenres: PropTypes.func.isRequired,
-    onChange: PropTypes.func.isRequired
-};
-
-export default GenresHOC(Genres);
+export default Genres;

@@ -62,10 +62,10 @@ export default class MoviePage extends Component {
                                 <p>{movie.overview}</p>
                             </div>
                             <span className="icons">
-                  <Favorite item={movie}/>
+                  {/*<Favorite item={movie}/>*/}
                 </span>
                             <span className="icons">
-                  <WatchList item={movie}/>
+                  {/*<WatchList item={movie}/>*/}
                 </span>
                         </div>
                         <Tabs id={this.props.match.params.id} />
