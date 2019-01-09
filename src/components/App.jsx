@@ -26,20 +26,6 @@ class App extends React.Component {
     }
 
 
-    onClear = () => {
-        const PureState = {
-            filters: {
-                sort_by: "popularity.desc",
-                primary_release_year: "2018",
-                with_genres: []
-            },
-            page: 1,
-            total_pages: ""
-        };
-
-        this.setState({ ...PureState });
-    };
-
     render() {
         const {
             userStore: {

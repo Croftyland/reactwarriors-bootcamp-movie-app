@@ -1,39 +1,31 @@
 import React from "react";
 import MovieItem from "./MovieItem";
-import { observer, inject } from "mobx-react";
 import Loader from "react-loader-spinner";
+import { inject, observer } from "mobx-react";
 
-@inject(({ moviesPageStore, userStore }) => ({
-  moviesPageStore,
-  userStore
+@inject(({ moviesPageStore }) => ({
+  moviesPageStore
 }))
 @observer
 class MoviesList extends React.Component {
-
   componentDidMount() {
-    this.props.moviesPageStore.getMovies(
-    );
+    this.props.moviesPageStore.getMovies();
   }
 
   render() {
     const {
-      moviesPageStore: { isLoading, movies },
-      userStore: { user, session_id }
+      moviesPageStore: { isLoading, movies }
     } = this.props;
-
-    if (isLoading) {
-      return (
-          <span className="loader">
-          <Loader type="ThreeDots" />
-        </span>
-      );
-    }
-    return (
+    return isLoading ? (
+        <span className="spinner">
+        <Loader type="Audio" color="salmon" height={80} width={80} />
+      </span>
+    ) : (
         <div className="row">
           {movies.map(movie => {
             return (
                 <div key={movie.id} className="col-6 mb-4">
-                  <MovieItem item={movie} user={user} session_id={session_id} />
+                  <MovieItem item={movie} />
                 </div>
             );
           })}

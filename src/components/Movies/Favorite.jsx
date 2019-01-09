@@ -1,24 +1,13 @@
 import React from "react";
-import AddFavoriteHOC from "../HOC/AddFavoriteHOC";
+import AddMovieHOC from "../HOC/AddMovieHOC";
 import AppContextHOC from "../HOC/AppContextHOC";
 import UIIcon from "../UIComponents/UIIcon";
 
-const Favorite = ({changeFavorite, isAdd}) => {
-    return (
-        <UIIcon isAdd={isAdd} type="heart" onClick={changeFavorite("favorite")}/>
-    );
-};
+class FavoriteIcon extends React.Component {
+    render() {
+        const { onClick, isAdd } = this.props;
+        return <UIIcon onClick={onClick} isAdd={isAdd} type="heart" />;
+    }
+}
 
-export default AppContextHOC(AddFavoriteHOC(Favorite, "favoriteMovies"));
-
-/*  componentDidUpdate(prevProps, prevState) {
-     if (
-       prevState.user === null &&
-       !_.isEqual(prevState.user, this.state.user)
-     ) {
-       console.log("render didupdate");
-       this.getFavoriteMovies();
-       this.getWatchListMovies();
-     }
-   } */
-
+export default AppContextHOC(AddMovieHOC(FavoriteIcon, "favorite"));

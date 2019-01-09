@@ -1,7 +1,7 @@
 import React from "react";
-import AddFavoriteHOC from "../HOC/AddFavoriteHOC";
-import AppContextHOC from "../HOC/AppContextHOC";
+import  AddMovieHOC  from "../HOC/AddMovieHOC";
 import UIIcon from "../UIComponents/UIIcon";
+import AppContextHOC from "../HOC/AppContextHOC";
 
 const WatchList = ({ changeFavorite, isAdd }) => {
   return (
@@ -12,4 +12,4 @@ const WatchList = ({ changeFavorite, isAdd }) => {
     />
   );
 };
-export default AppContextHOC(AddFavoriteHOC(WatchList, "watchlistMovies"));
+export default  AppContextHOC(AddMovieHOC(WatchList, "watchlistMovies"));

@@ -1,15 +1,27 @@
-import {observable, action, configure, reaction, values, runInAction} from "mobx";
+import { observable, action, configure, reaction, values,flow } from "mobx";
 import CallApi from "../api/api";
 
 configure({ enforceActions: "always" });
 
-const initialFilters = {
+const defaultFilters = {
     sort_by: "popularity.desc",
     primary_release_year: "2018",
     with_genres: []
 };
 
 class MoviesPageStore {
+    @observable movies = [];
+
+    @observable isLoading = false;
+
+    @observable filters = defaultFilters;
+
+    @observable genresList = [];
+
+    @observable page = 1;
+
+    @observable total_pages = "";
+
     constructor() {
         reaction(
             () => this.filters.with_genres.length,
@@ -34,44 +46,37 @@ class MoviesPageStore {
                 this.getMovies();
             }
         );
+
     }
 
-    @observable movies = [];
 
-    @observable isLoading = false;
 
-    @observable filters = initialFilters;
+    getMovies = flow(function*() {
+        moviesPageStore.isLoading = true;
+            const { sort_by, primary_release_year, with_genres
+            } = moviesPageStore.filters;
+            let queryParams = {
+                language: "ru-RU",
+                sort_by: sort_by,
+                page: this.page,
+                primary_release_year: primary_release_year
+            };
+            if (with_genres.length > 0) {
+                queryParams.with_genres = with_genres.join(",");
+            }
+            const data = yield CallApi.get("/discover/movie", {
+                params: queryParams
+            });
+            moviesPageStore.movies.replace(data.results);
+            moviesPageStore.total_pages = data.total_pages;
+            moviesPageStore.isLoading = false;
 
-    @observable genresList = [];
-
-    @observable page = 1;
-
-    @observable total_pages = "";
+    });
 
     @action
-    getMovies = () => {
-        this.isLoading = true;
-        const { sort_by, primary_release_year, with_genres } = this.filters;
-        const queryStringParams = {
-            language: "ru-RU",
-            sort_by: sort_by,
-            page: this.page,
-            primary_release_year: primary_release_year
-        };
-
-        if (with_genres.length > 0)
-            queryStringParams.with_genres = with_genres.join(",");
-
-        CallApi.get("/discover/movie", {
-            params: queryStringParams
-        }).then(data => {
-            this.onChangePagination({
-                page: data.page,
-                total_pages: data.total_pages
-            });
-            this.movies = data.results;
-            this.isLoading = false;
-        });
+    onChangePagination = ({ page, total_pages }) => {
+        this.page = page;
+        this.total_pages = total_pages;
     };
 
     @action
@@ -81,13 +86,13 @@ class MoviesPageStore {
                 language: "ru-RU"
             }
         }).then(data => {
-            runInAction(
-                () => {
-                    this.genresList.replace(data.genres);
-                }
-            )
-
+            this.updateGenresList(data.genres);
         });
+    };
+
+    @action
+    updateGenresList = genres => {
+        this.genresList = genres;
     };
 
 
@@ -95,7 +100,6 @@ class MoviesPageStore {
     updateLoading = value => {
         this.isLoading = value;
     };
-
 
 
     @action
@@ -112,7 +116,7 @@ class MoviesPageStore {
 
     @action
     clearAllFilters = () => {
-        this.updateFilters(initialFilters);
+        this.updateFilters(defaultFilters);
         this.page = 1;
         this.total_pages = "";
     };
@@ -123,42 +127,38 @@ class MoviesPageStore {
     };
 
     @action
-    onChangeGenres = event => {
+    changeFilters = event => {
+        const { with_genres } = this.filters;
+        const value = event.target.checked
+            ? [...with_genres, event.target.value]
+            : with_genres.filter(genre => genre !== event.target.value);
+        this.filters.with_genres = value;
+    };;
+
+    @action
+    resetGenres = () => {
         this.onChangeFilters({
             target: {
                 name: "with_genres",
-                value: event.target.checked
-                    ? [...this.filters.with_genres, event.target.value]
-                    : this.filters.with_genres.filter(
-                        genre => genre !== event.target.value
-                    )
+                value: []
             }
         });
     };
 
     @action
-    onClearFilters = () => {
-        for (let key in initialFilters){
-            switch (key) {
-                case "with_genres":
-                    this.filters[key].clear();
-                    break;
-                default:
-                    this.filters[key] = initialFilters[key];
-            }
-        }
-        this.page = 1;
-        this.total_pages = "";
-    };
-
-    @action
     nextPage = () => {
-        this.onChangePage(this.page + 1);
+        this.onChangePagination({
+            page: this.page + 1,
+            total_pages: this.total_pages
+        });
     };
 
     @action
-    prevPage = () => {
-        this.onChangePage(this.page - 1);
+    prevPage = page => event => {
+        this.onChangePagination({
+            page: this.page - 1,
+            total_pages: this.total_pages
+        });
     };
 }
 

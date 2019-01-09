@@ -1,6 +1,5 @@
 import React from "react";
 import { inject, observer } from "mobx-react";
-import UILoader from "../UIComponents/UILoader";
 
 export default Component => {
     @inject(({ moviesPageStore }) => ({

@@ -19,8 +19,8 @@ export default class MovieItem extends React.Component {
                         {item.title}
                     </Link>
                     <div className="card-text">Рейтинг: {item.vote_average}</div>
-                    <Favorite item={item} />
-                    <WatchList item={item} />
+                    {/*<Favorite item={item} />*/}
+                    {/*<WatchList item={item} />*/}
                 </div>
             </div>
         );
